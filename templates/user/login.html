@@ -1,0 +1,24 @@
+{% extends 'base.html'%}
+{% load static%}
+{% block content %}
+{% load crispy_forms_tags %}
+{% url 'register' as register_url %}
+
+
+
+<div class="container">
+    <div id="logreg-forms">
+        <h1 class="h3 font-weight-normal" style="text-align: center">Login</h1>
+        {% csrf_token %}
+        {% crispy form %}
+
+
+
+        <a class="ml-3" href="{{ register_url }}">Don't have an account? Click to Register</a>        
+
+    </div>
+
+    </div>     
+
+{% endblock %}
+

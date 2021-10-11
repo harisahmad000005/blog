@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <title>Base Template</title>
+
+    {% block base_head %} {% endblock%}
+  </head>
+  <body>
+    {% include 'base/bootstrap.html'%} {% if messages %}
+    {% include 'base/navbar.html' with brand_name='My Blog'%} 
+
+    <div class="container text-center">
+      <div class="col-md-12">
+        {% for message in messages %} {% ifchanged message %}
+        <div
+          class="text-center alert {% if 'error' in message.tags %} alert-danger {% else %} alert-{{ message.tags }} {% endif %}"
+        >
+          {{ message }}
+        </div>
+        {% endifchanged %} {% endfor %}
+      </div>
+    </div>
+    {% endif %} {% if form.errors %}
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-sm-12 m-auto p-auto">
+          <div id="errors" class="mt-2 text-center">
+            <div
+              class="inner font-weight-bold"
+              style="
+                background-color: #d9534f;
+                padding: 10px;
+                border-radius: 20px;
+                color: white;
+              "
+            >
+              <p>
+                There were some errors in the information you entered. Please
+                correct the following:
+              </p>
+              {{ form.non_field_errors }}
+              <ul class="text-capitalize">
+                {% for field in form %} {% if field.errors %}
+                <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+                {% endif %} {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    <div class="container">{% block content %} {% endblock%}</div>
+  </body>
+</html>

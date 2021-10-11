@@ -1,0 +1,86 @@
+{% extends 'base.html'%}
+{% load static%} 
+{% block content %}
+
+<div class="container">
+  <h1 class="h3 font-weight-normal" style="text-align: center">Login</h1>
+  <div class="row">
+    <div class="col-md-12">
+      <form method="get" action="{% url 'posts' %}">
+        <p>
+          Filter:
+          <select id="select_change" class="form-control" name="search">
+            <option {% if not filter_val %}selected{%endif%} value="">All</option>
+            <option {% if filter_val == "unpublish" %}selected{%endif%} value="unpublish">Unpublish</option>
+            <option {% if filter_val == "publish" %}selected{%endif%} value="publish">Publish</option>
+          </select>
+        </p>
+        <p><input type="submit" hidden name="submit" value="submit" /></p>
+      </form>
+    </div>
+    {%for post in post_list%}
+    <div class="col-md-8 pt-3 m-auto">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+          <p class="card-text">{{post.content}}</p>
+          <a href="#" class="card-link">Card link</a>
+          <a href="#" class="card-link">Another link</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    <div class="col-md-12">
+      {% if is_paginated %}
+      <div class="pagination pagination-centered">
+        <ul>
+          {% if page_obj.has_previous %}
+          <li>
+            <a
+              href="{% url 'posts' %}?page={{ page_obj.previous_page_number }}&search="
+              >Prev</a
+            >
+          </li>
+          {% endif %} {% for i in paginator.page_range %}
+          <li>
+            <a href="{% url 'posts' %}?page={{i}}&search=">{{i}}</a>
+          </li>
+          {% endfor %} {% if page_obj.has_next %}
+          <li>
+            <a
+              href="{% url 'posts' %}?page={{ page_obj.next_page_number }}&search="
+              >Next</a
+            >
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+      {%endif%}
+    </div>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        setUrlFilterParam()
+    });
+    const addQueryParam = (tag, val) => {
+        const url = new URL(tag.href);
+        url.searchParams.set('search', val);
+        return url.toString();
+    };
+    function setUrlFilterParam(){
+        $.map($(document).find(".pagination a"), function (tag) {
+            tag.href = addQueryParam(tag, $('#select_change').val())
+        });
+    }
+
+    $("#select_change").on("change", function(){
+        setUrlFilterParam()
+        $("input[type=submit]").click()
+    });
+
+</script>
+
+{% endblock %}

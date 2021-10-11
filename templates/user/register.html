@@ -1,0 +1,19 @@
+{% extends 'base.html'%}
+{% load static%}
+{% block content %}
+{% load crispy_forms_tags %}
+{% url 'login' as login_url %}
+
+
+<div class="container">
+    <div id="logreg-forms">
+        <h1 class="h3 font-weight-normal" style="text-align: center"> Register</h1>
+                {% crispy form %}
+                <a class="ml-3 mb-3" href="{{ login_url }}">Already have an account? Click to Login</a>
+    </div>
+
+    </div> 
+    
+
+{% endblock %}
+

@@ -1,0 +1,28 @@
+{% url 'home' as home_url %}
+{% url 'products:list' as products_list_url %}
+{% url 'login' as login_url %}
+{% url 'logout' as logout_url %}
+{% url 'add_products' as add_products_url %}
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-3">
+  <div class='container'>
+  <a class="navbar-brand" href="{{ home_url }}">
+      {% if brand_name %}{{brand_name}} {% else %} Ecommerce final year {% endif%} 
+    </a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+        {% if request.user.is_authenticated%}
+      		<li class="nav-item {% if request.path == logout_url %} active {% endif %} ">
+        	<a class="nav-link" href="{{ logout_url}}">Log out</a>
+      		</li>
+      		<li class="nav-item {% if request.path == add_products_url %} active {% endif %} ">
+        	<a class="nav-link" href="{{ add_products_url }}">Add Product</a>
+      		</li>
+        {% endif %}
+    </ul>
+  </div>
+</div>
+</nav>
