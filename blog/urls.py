@@ -21,7 +21,7 @@ urlpatterns = [
     path('', LoginView.as_view(),name='login'),
     path('register', RegisterView.as_view(),name="register"),
     path('post/', HomeView.as_view(),name='posts'),
-    path('post/<int:pk>', PostDetailView.as_view(),name='postDetail'),
+    path('post/detail/<int:pk>', PostDetailView.as_view(),name='postDetail'),
     path('post/create', PostCreateView.as_view(),name='postCreate'),
     path('post/<int:pk>/update', PostUpdateView.as_view(),name='postUpdate'),
     path('admin/', admin.site.urls),

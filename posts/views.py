@@ -1,27 +1,21 @@
+from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from .models import Posts
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from .forms import PostsModelForm
 # Create your views here.
-
-# def home_view(request):
-#     post_obj= Posts.objects.all()
-#     context = {
-#         'posts': post_obj
-#     }
-#     return render(request,'index.html',context)
-
-
 class HomeView(ListView):
     model=Posts
     ordering = ['-id']
     template_name="home.html"
     context_object_name = "post_list"
-    paginate_by=2
-
+    paginate_by=7
     def get_queryset(self):
         result = super(HomeView, self).get_queryset()
         filter_val = self.request.GET.get('search', '')
+        user = self.request.user.is_superuser
+        if user:
+            users = User.objects.all().exclude(is_superuser=True)
         if filter_val:
             result = Posts.objects.filter(active=filter_val)
         return result
@@ -50,3 +44,5 @@ class PostUpdateView(UpdateView):
     model = Posts
     form_class = PostsModelForm
     template_name="post/postCreateView.html"
+    def get_success_url(self):
+        return redirect(self.object.get_absolute_url())

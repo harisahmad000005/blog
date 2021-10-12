@@ -1,7 +1,25 @@
 {% extends 'base.html'%}
 {% load static%} 
-
 {% block content %}
-{{post_object.title}}
-{{post_object.content}}
+
+<div class="col-md-8 pt-3 m-auto">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{post_object.title}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Posted By: {{post_object.author_name}}</h6>
+        <p class="card-text">{{post_object.content}}</p>
+        <p>Posted Date: {{post_object.publish_date}}</p>
+        <div class="row">
+        <form action="{% url 'posts' %}">
+          <input class="btn btn-success mr-2" type="submit" value="Go Back" />
+      </form>
+      <form action="{% url 'postUpdate' post_object.id %}">
+        <input class="btn btn" type="submit" value="Update" />
+    </form>
+</div>
+      </div>
+    </div>
+  </div>
+<h1>
+
 {% endblock %}

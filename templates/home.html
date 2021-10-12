@@ -3,14 +3,15 @@
 {% block content %}
 {% url 'postDetail' as postDetail_url %}
 <div class="container">
-  <h1 class="h3 font-weight-normal" style="text-align: center">Login</h1>
   <div class="row">
     <div class="col-md-12">
       <form method="get" action="{% url 'posts' %}">
         <p>
           Filter:
           <select id="select_change" class="form-control" name="search">
+            {% if request.user.is_superuser %}
             <option {% if not filter_val %}selected{%endif%} value="">All</option>
+            {%endif%}
             <option {% if filter_val == "unpublish" %}selected{%endif%} value="unpublish">Unpublish</option>
             <option {% if filter_val == "publish" %}selected{%endif%} value="publish">Publish</option>
           </select>
@@ -25,8 +26,10 @@
           <h5 class="card-title">{{post.title}}</h5>
           <h6 class="card-subtitle mb-2 text-muted">Posted By: {{post.author_name}}</h6>
           <p class="card-text">{{post.content}}</p>
-          <a href="#" class="card-link">{{post.publish_date}}</a>
-          <a href="{% url 'postDetail' post.id %}" class="card-link">Details</a>
+          <p>Posted Date: {{post.publish_date}}</p>
+          <form action="{% url 'postDetail' post.id %}">
+            <input class="btn btn-success" type="submit" value="Details" />
+        </form>
         </div>
       </div>
     </div>
