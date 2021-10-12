@@ -14,8 +14,10 @@
     {% block base_head %} {% endblock%}
   </head>
   <body>
-    {% include 'base/bootstrap.html'%} {% if messages %}
+    {% include 'base/css.html' %} 
     {% include 'base/navbar.html' with brand_name='My Blog'%} 
+    {% include 'base/bootstrap.html'%} 
+{% if messages %}
 
     <div class="container text-center">
       <div class="col-md-12">

@@ -1,12 +1,13 @@
-{% url 'home' as home_url %}
-{% url 'products:list' as products_list_url %}
+{% url 'posts' as home_url %}
 {% url 'login' as login_url %}
 {% url 'logout' as logout_url %}
-{% url 'add_products' as add_products_url %}
+{% url 'postCreate' as postCreate_url %}
+{% url 'register' as register_url %}
+
 <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-3">
   <div class='container'>
   <a class="navbar-brand" href="{{ home_url }}">
-      {% if brand_name %}{{brand_name}} {% else %} Ecommerce final year {% endif%} 
+      {% if brand_name %}{{brand_name}} {% else %} My Blog {% endif%} 
     </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -14,14 +15,29 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
+      <li class="nav-item {% if request.path == home_url %} active {% endif %} ">
+        <a class="nav-link" href="{{ home_url }}">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item {% if request.path == postCreate_url %} active {% endif %} ">
+        <a class="nav-link" href="{{ postCreate_url }}">Create Post</a>
+      </li>
+      </li>
         {% if request.user.is_authenticated%}
       		<li class="nav-item {% if request.path == logout_url %} active {% endif %} ">
-        	<a class="nav-link" href="{{ logout_url}}">Log out</a>
+        	<a class="nav-link" href="{{ logout_url}}">LogOut</a>
       		</li>
-      		<li class="nav-item {% if request.path == add_products_url %} active {% endif %} ">
-        	<a class="nav-link" href="{{ add_products_url }}">Add Product</a>
+
+       {% else %}
+      		<li class="nav-item {% if request.path == register_url %} active {% endif %} ">
+        	<a class="nav-link" href="{{ register_url}}">Register</a>
+      		</li>
+
+      		<li class="nav-item {% if request.path == login_url %} active {% endif %} ">
+        	<a class="nav-link" href="{{ login_url}}">Login</a>
       		</li>
         {% endif %}
+     
+   
     </ul>
   </div>
 </div>
