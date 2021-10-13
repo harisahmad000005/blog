@@ -38,4 +38,4 @@ class LoginView(FormView):
 class RegisterView(CreateView):
     form_class = RegisterForm
     template_name = 'user/register.html' 
-    success_url = 'posts/'
+    success_url = '/'

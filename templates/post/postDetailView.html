@@ -13,9 +13,12 @@
         <form action="{% url 'posts' %}">
           <input class="btn btn-success mr-2" type="submit" value="Go Back" />
       </form>
+      {% if request.user.is_superuser or request.user == post_object.author_name %}
       <form action="{% url 'postUpdate' post_object.id %}">
         <input class="btn btn" type="submit" value="Update" />
     </form>
+      {% endif %}
+
 </div>
       </div>
     </div>
