@@ -3,22 +3,38 @@
 {% block content %}
 {% url 'postDetail' as postDetail_url %}
 <div class="container">
+  <div class="container">
+  </div>
   <div class="row">
     <div class="col-md-12">
+      {% if request.user.is_superuser %}
       <form method="get" action="{% url 'posts' %}">
         <p>
           Filter:
           <select id="select_change" class="form-control" name="search">
-            {% if request.user.is_superuser %}
             <option {% if not filter_val %}selected{%endif%} value="">All</option>
-            {%endif%}
             <option {% if filter_val == "unpublish" %}selected{%endif%} value="unpublish">Unpublish</option>
-            <option {% if filter_val == "publish" %}selected{%endif%} value="publish">Publish</option>
+            <option selected="selected" {% if filter_val == "publish" %}selected{%endif%} value="publish">Publish</option>
           </select>
         </p>
         <p><input type="submit" hidden name="submit" value="submit" /></p>
       </form>
+      {%endif%}
     </div>
+    {% if request.user.is_superuser %}
+    <div class="card ml-3">
+    <div class="d-flex" id="wrapper">
+      <div class="bg-white" id="sidebar-wrapper">
+          <div class="sidebar-heading bg-light">All Users</div>
+          <div class="list-group list-group-flush">
+            {%for user in users%}
+              <a class="list-group-item list-group-item-action list-group-item-light" href="{{user.id}}">{{user}}</a>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+    </div>
+  {% endif %}
     {%for post in post_list%}
     <div class="col-md-8 pt-3 m-auto">
       <div class="card">
@@ -41,18 +57,18 @@
           {% if page_obj.has_previous %}
           <li>
             <a
-              href="{% url 'posts' %}?page={{ page_obj.previous_page_number }}&search="
+              href="{% url 'posts' %}?page={{ page_obj.previous_page_number }}&search=publish"
               >Prev</a
             >
           </li>
           {% endif %} {% for i in paginator.page_range %}
           <li>
-            <a href="{% url 'posts' %}?page={{i}}&search=">{{i}}</a>
+            <a href="{% url 'posts' %}?page={{i}}&search=publish">{{i}}</a>
           </li>
           {% endfor %} {% if page_obj.has_next %}
           <li>
             <a
-              href="{% url 'posts' %}?page={{ page_obj.next_page_number }}&search="
+              href="{% url 'posts' %}?page={{ page_obj.next_page_number }}&search=publish"
               >Next</a
             >
           </li>

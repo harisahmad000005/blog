@@ -19,7 +19,62 @@
 </div>
       </div>
     </div>
+    <hr/>
+  <h2>Comments.....</h2>
+  <div class="form-outline mb-4">
+      <div id="no_input"></div>
+    <input
+      type="text"
+      id="addComment"
+      class="form-control"
+      placeholder="Type comment..."
+    />
+    <button class="form-label btn mt-1" for="addANote" id="save_comment">Add Comment</button>
   </div>
-<h1>
+  {% if not comments_list %}
+    No Comments To Show
+  {% else %}
+  {% for comment in comments_list %}
+  <div class="card mb-1">
+    <div class="card-body">
+      <p>{{ comment.comment}}</p>
+      <div class="d-flex justify-content-between">
+        <div class="d-flex flex-row align-items-center">
+          <p class="small mb-0 ms-2">{{comment.name}}</p>
+          <small>{{comment.created_on}}</small>
+        </div>
+        <div class="d-flex flex-row align-items-center">
+        </div>
+      </div>
+    </div>
+  </div>
+    {% endfor %}
+    {%endif%}
+</div>
+<script>
+    $("#save_comment").on('click',function(){
+        comment = $("#addComment").val()
+        console.log("---------------------",window.location.href)
+        if(comment.length !=0){
+            $("#no_input").empty()
+            $.ajax({
+                url: "",
+                method: 'POST',
+                data: {
+                    comment: comment,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                headers: {'X-CSRFToken': $("input[name=csrfmiddlewaretoken]").val()},
+                success: function (data) {
+                  console.log(data.Message)
+                }
+            });
+        }
+        else{
+            $("#no_input").append("<p>*Cant post an empty comment </p>")
+        }
+    })
+</script>
+
 
 {% endblock %}

@@ -17,12 +17,18 @@ class Posts(models.Model):
     publish_date = models.DateTimeField(auto_now_add=True)
     active = models.CharField(max_length=10, choices=ACTIVE_CHOICES, default='green')
     def __str__(self):
-        return self.title
+        if self.title:
+            return self.title
+        else:
+            return "-"
     def get_absolute_url(self):
         return reverse('postDetail', kwargs={'pk':self.id})
 
 class PostComments(models.Model):
-    post = models.ForeignKey(Posts, on_delete=models.CASCADE)
+    post = models.ForeignKey(Posts, related_name='comments' ,on_delete=models.CASCADE)
     name = models.ForeignKey(User,on_delete=models.CASCADE)
     comment = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '{}-Comment By:-{}'.format(self.post.title, self.name.username)

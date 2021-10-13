@@ -28,6 +28,7 @@ DEBUG = True
 
 CRISPY_TEMPLATE__PACK = 'bootstrap4'
 ALLOWED_HOSTS = []
+LOGOUT_REDIRECT_URL = "/"
 
 
 # Application definition
