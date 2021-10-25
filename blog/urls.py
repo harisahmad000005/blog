@@ -28,7 +28,10 @@ urlpatterns = [
     path('post/',login_required(HomeView.as_view()),name='posts'),
     path('post/detail/<int:pk>', login_required(PostDetailView.as_view()),name='postDetail'),
     path('post/create', login_required(PostCreateView.as_view()),name='postCreate'),
-    path('post/<int:pk>/update', login_required(PostUpdateView.as_view()),name='postUpdate'),
-    path('post/comment',login_required(post_comment),name='post_comment'),
+    path('post/update/<int:pk>', login_required(PostUpdateView.as_view()),name='postUpdate'),
+    path('detail/comment',login_required(post_comment),name='post_comment'),
+    path('detail/comment/update_delete',login_required(post_comment_update_delete),name='update_delete_comment'),
+
+    
     path('admin/', admin.site.urls),
 ]

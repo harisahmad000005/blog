@@ -17,7 +17,7 @@
             <option selected="selected" {% if filter_val == "publish" %}selected{%endif%} value="publish">Publish</option>
           </select>
         </p>
-        <p><input type="submit" hidden name="submit" value="submit" /></p>
+        <p><input id="filter" type="submit" hidden name="submit" value="submit" /></p>
       </form>
       {%endif%}
     </div>
@@ -97,7 +97,7 @@
 
     $("#select_change").on("change", function(){
         setUrlFilterParam()
-        $("input[type=submit]").click()
+        $("input#filter").click()
     });
 
 </script>

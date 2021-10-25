@@ -34,49 +34,220 @@
     />
     <button class="form-label btn mt-1" for="addANote" id="save_comment">Add Comment</button>
   </div>
+  <div id="comment_div">
   {% if not comments_list %}
     No Comments To Show
   {% else %}
   {% for comment in comments_list %}
-  <div class="card mb-1">
+  
+  <div id="comment_card_delete{{comment.id}}" class="card mb-1">
     <div class="card-body">
-      <p>{{ comment.comment}}</p>
+      <p id="comment_update{{comment.id}}" class="posted_comment">{{ comment.comment}}</p>
       <div class="d-flex justify-content-between">
         <div class="d-flex flex-row align-items-center">
           <p class="small mb-0 ms-2">{{comment.name}}</p>
-          <small>{{comment.created_on}}</small>
+          <small>:{{comment.created_on}}</small>
         </div>
-        <div class="d-flex flex-row align-items-center">
+        <div class="d-flex flex-row align-items-center comment">
+          <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-primary pr-2" id="comment_update{{comment.id}}">Edit</button>
+          <button type="button" data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger pl-2" id="comment_delete{{comment.id}}">Delete</button>
         </div>
       </div>
     </div>
   </div>
     {% endfor %}
     {%endif%}
+  </div>
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Update Comment</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p><input
+          type="text"
+          id="updateComment"
+          class="form-control"
+          placeholder="Type comment..."
+        /></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="update" class="btn btn-primary" data-dismiss="modal">Update</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+<div id="myDeleteModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Delete Comment</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this comment?
+          <p><input
+            type="text"
+            id="delete_comment"
+            class="form-control"
+            placeholder="Type comment..."
+          /></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="deleteID" class="btn btn-danger" data-dismiss="modal">Sure</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
 </div>
 <script>
+  var comment_data
     $("#save_comment").on('click',function(){
         comment = $("#addComment").val()
-        console.log("---------------------",window.location.href)
+        comment = comment.trim()
+        url = window.location.href
+        var post_id = url.substring(url.lastIndexOf('/') + 1);
+        post_id = post_id.replace(/\D/g,'');
         if(comment.length !=0){
             $("#no_input").empty()
             $.ajax({
-                url: "",
+                url: "{% url 'post_comment' %}",
                 method: 'POST',
                 data: {
                     comment: comment,
+                    post_id : post_id,
                     'csrfmiddlewaretoken': '{{ csrf_token }}',
                 },
                 headers: {'X-CSRFToken': $("input[name=csrfmiddlewaretoken]").val()},
                 success: function (data) {
-                  console.log(data.Message)
+                  console.log(data)
+                  comment = $("#addComment").val('')
+                  div_data = `
+                  <div class="card">
+                  <div class="card-body">
+                    <p>${data.new_comment.comment}</p>
+                    <div class="d-flex justify-content-between">
+                      <div class="d-flex flex-row align-items-center">
+                        <p class="small mb-0 ms-2">${data.user}</p>
+                        <small>:${data.new_comment.created_on}</small>
+                      </div>
+                      <div class="d-flex flex-row align-items-center comment">
+                        <button  type="button" data-toggle="modal" data-target="#myModal" class="btn btn-primary pr-2"   id="edit${data.new_comment.id}">Edit</button>
+                        <button class="btn btn-danger pl-2" id="comment_delete${data.new_comment.id}">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                  `;
+                  $('#comment_div').prepend(div_data)
+
+
                 }
             });
         }
         else{
-            $("#no_input").append("<p>*Cant post an empty comment </p>")
+          $("#no_input").empty()
+          $("#no_input").append("<p>*Cant post an empty comment </p>")
+     
         }
     })
+
+     
+
+    $(".comment").on('click',function(e){
+      comment = $(e.target).closest( "p" ).find('.posted_comment');
+      var otherInput = $(this).closest('.card-body').find('.posted_comment').html();
+      $("#updateComment").val(otherInput)
+      $('#update').attr('updateID', `${e.target.id}`);
+      $('#deleteID').attr('deleteID', `${e.target.id}`);
+      comment_data = otherInput
+      $('#delete_comment').val(otherInput);
+      $('#delete_comment').attr("disabled", true) 
+      $('#update').prop('disabled', true);
+
+
+    });
+
+    $("#updateComment").keyup(function() {
+      var data =$("#updateComment").val()
+        data = data.trim()
+        console.log("00000",comment_data)
+        if (comment_data == data){
+          $('#update').prop('disabled', true);
+        }
+        else if (data.length==0){
+          $('#update').prop('disabled', true);
+
+        }
+        else{
+          $('#update').prop('disabled', false);
+        }
+
+    })
+
+    $('#update').on('click', function() {
+      var comment =$("#updateComment").val()
+      comment_id = $('#update').attr('updateID');
+      $.ajax({
+                url: "{% url 'update_delete_comment' %}",
+                method: 'POST',
+                data: {
+                    comment: comment,
+                    comment_id : comment_id,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                headers: {'X-CSRFToken': $("input[name=csrfmiddlewaretoken]").val()},
+                success: function (data) {
+                  $(`#${data.comment_id}`).empty()
+                  $(`#${data.comment_id}`).append(data.comment)
+                  
+                  
+
+                }
+            });
+        
+
+    })
+
+    $('#deleteID').on('click', function() {
+      comment_id = $('#deleteID').attr('deleteid');
+      console.log(comment_id)
+      $.ajax({
+                url: "{% url 'update_delete_comment' %}",
+                method: 'POST',
+                data: {
+                    comment_id : comment_id,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+                },
+                headers: {'X-CSRFToken': $("input[name=csrfmiddlewaretoken]").val()},
+                success: function (data) {
+                  $(`#${data.comment_card_delete}`).remove();
+
+                }
+            });
+        
+
+    })
+
+
 </script>
 
 

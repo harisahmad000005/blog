@@ -5,6 +5,8 @@ from django.shortcuts import redirect, render
 from .models import PostComments, Posts
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from .forms import PostsModelForm
+import re
+
 # Create your views here.
 class HomeView(ListView):
     model=Posts
@@ -34,7 +36,7 @@ class PostDetailView(DetailView):
     context_object_name = "post_object"
     def get_context_data(self, *args, **kwargs):
         context = super(PostDetailView, self).get_context_data(*args, **kwargs)
-        context['comments_list'] = PostComments.objects.filter(post_id=self.kwargs['pk'])
+        context['comments_list'] = PostComments.objects.filter(post_id=self.kwargs['pk']).order_by('-id')
         return context
 class PostCreateView(CreateView):
     model = Posts
@@ -51,12 +53,44 @@ class PostUpdateView(UpdateView):
     model = Posts
     form_class = PostsModelForm
     template_name="post/postCreateView.html"
-    def get_success_url(self):
-        return redirect(self.object.get_absolute_url())
-
+    def get_success_url(self): 
+        # return reverse('postDetail', kwargs={"pk":self.kwargs["pk"]})  
+        return self.object.get_absolute_url()
 
 
 def post_comment(request):
     if request.method=="POST":
-        print("-------------------------------")
-    return JsonResponse({'Message':"WORKING"})
+        comment = request.POST.get('comment', '')
+        post_id = request.POST.get('post_id', '')
+        new_comment =PostComments.objects.create(post_id=post_id,comment=comment,name=request.user)
+        del new_comment.__dict__['_state']
+        new_comment_data = {
+            'new_comment': new_comment.__dict__ ,
+             'user' : request.user.username
+                   }
+    return JsonResponse(new_comment_data)
+
+def post_comment_update_delete(request):
+    if request.method=="POST":
+        comment = request.POST.get('comment', '')
+        comment_id_str = request.POST.get('comment_id', '')
+        if comment_id_str :
+            comment_id = int(re.sub("[^0-9]", "", comment_id_str))
+            if comment:
+                PostComments.objects.filter(id=comment_id).update(comment=comment)
+                new_comment_data = {
+                "massage": "Successfully Updated",
+                "comment":comment,
+                "comment_id": comment_id_str}
+            else:
+                PostComments.objects.filter(id=comment_id).delete()
+                new_comment_data = {
+                "massage": "Successfully Deleted",
+                'comment_card_delete' : f"comment_card_delete{comment_id}"
+                 }
+        else:
+            new_comment_data = {
+            "massage": "Something Went Worng",
+                 }
+
+    return JsonResponse(new_comment_data)
