@@ -11,11 +11,11 @@
         <p>Posted Date: {{post_object.publish_date}}</p>
         <div class="row">
         <form action="{% url 'posts' %}">
-          <input class="btn btn-success mr-2" type="submit" value="Go Back" />
+          <input class="btn btn-success ml-2 mr-2" type="submit" value="Go Back" />
       </form>
       {% if request.user.is_superuser or request.user == post_object.author_name %}
       <form action="{% url 'postUpdate' post_object.id %}">
-        <input class="btn btn" type="submit" value="Update" />
+        <input class="btn btn border-dark" type="submit" value="Update" />
     </form>
       {% endif %}
 
@@ -32,7 +32,7 @@
       class="form-control"
       placeholder="Type comment..."
     />
-    <button class="form-label btn mt-1" for="addANote" id="save_comment">Add Comment</button>
+    <button class="form-label btn mt-1 border border-dark" for="addANote" id="save_comment">Add Comment</button>
   </div>
   <div id="comment_div">
   {% if not comments_list %}
@@ -49,8 +49,8 @@
           <small>:{{comment.created_on}}</small>
         </div>
         <div class="d-flex flex-row align-items-center comment">
-          <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-primary pr-2" id="comment_update{{comment.id}}">Edit</button>
-          <button type="button" data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger pl-2" id="comment_delete{{comment.id}}">Delete</button>
+          <button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-primary mr-1" id="comment_update{{comment.id}}">Edit</button>
+          <button type="button" data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger " id="comment_delete{{comment.id}}">Delete</button>
         </div>
       </div>
     </div>
@@ -121,6 +121,8 @@
 <script>
   var comment_data
     $("#save_comment").on('click',function(){
+      $("#save_comment").attr("disabled", true) 
+
         comment = $("#addComment").val()
         comment = comment.trim()
         url = window.location.href
@@ -141,26 +143,25 @@
                   console.log(data)
                   comment = $("#addComment").val('')
                   div_data = `
-                  <div class="card">
+                  <div id="comment_card_delete${data.new_comment.id}" class="card mb-1">
                   <div class="card-body">
-                    <p>${data.new_comment.comment}</p>
+                    <p id="comment_update${data.new_comment.id}" class="posted_comment" >${data.new_comment.comment}</p>
                     <div class="d-flex justify-content-between">
                       <div class="d-flex flex-row align-items-center">
                         <p class="small mb-0 ms-2">${data.user}</p>
                         <small>:${data.new_comment.created_on}</small>
                       </div>
-                      <div class="d-flex flex-row align-items-center comment">
-                        <button  type="button" data-toggle="modal" data-target="#myModal" class="btn btn-primary pr-2"   id="edit${data.new_comment.id}">Edit</button>
-                        <button class="btn btn-danger pl-2" id="comment_delete${data.new_comment.id}">Delete</button>
+                      <div class="d-flex flex-row align-items-center added comment">
+                        <button  type="button" data-toggle="modal" data-target="#myModal" class="btn btn-primary pr-2"  id="comment_update${data.new_comment.id}">Edit</button>
+                        <button type="button" data-toggle="modal" data-target="#myDeleteModal" class="btn btn-danger pl-2" id="comment_delete${data.new_comment.id}">Delete</button>
                       </div>
                     </div>
                   </div>
                   </div>
                   `;
                   $('#comment_div').prepend(div_data)
-
-
                 }
+                
             });
         }
         else{
@@ -168,11 +169,12 @@
           $("#no_input").append("<p>*Cant post an empty comment </p>")
      
         }
+        $("#save_comment").attr("disabled", false) 
+
     })
 
-     
 
-    $(".comment").on('click',function(e){
+    $(document).on('click', '.comment', function(e) {
       comment = $(e.target).closest( "p" ).find('.posted_comment');
       var otherInput = $(this).closest('.card-body').find('.posted_comment').html();
       $("#updateComment").val(otherInput)
@@ -182,14 +184,11 @@
       $('#delete_comment').val(otherInput);
       $('#delete_comment').attr("disabled", true) 
       $('#update').prop('disabled', true);
-
-
     });
 
     $("#updateComment").keyup(function() {
       var data =$("#updateComment").val()
         data = data.trim()
-        console.log("00000",comment_data)
         if (comment_data == data){
           $('#update').prop('disabled', true);
         }
@@ -204,6 +203,7 @@
     })
 
     $('#update').on('click', function() {
+      
       var comment =$("#updateComment").val()
       comment_id = $('#update').attr('updateID');
       $.ajax({
@@ -218,9 +218,7 @@
                 success: function (data) {
                   $(`#${data.comment_id}`).empty()
                   $(`#${data.comment_id}`).append(data.comment)
-                  
-                  
-
+              
                 }
             });
         
@@ -229,7 +227,6 @@
 
     $('#deleteID').on('click', function() {
       comment_id = $('#deleteID').attr('deleteid');
-      console.log(comment_id)
       $.ajax({
                 url: "{% url 'update_delete_comment' %}",
                 method: 'POST',

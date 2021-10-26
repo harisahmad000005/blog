@@ -9,6 +9,11 @@ class PostsModelForm(forms.ModelForm):
     class Meta:
         model = Posts
         exclude = [ 'author_name',]
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'content': forms.Textarea(attrs={'class': 'form-control'}),
+            'active': forms.Select(attrs={'class': ''}),
+        }
     def clean_title(self):
         title=self.cleaned_data.get('title')
         if not title:
